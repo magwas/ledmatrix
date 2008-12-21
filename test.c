@@ -22,12 +22,17 @@ void clearleds()
 }
 
 char outbuffer[]="b x y\r\n";
-void blinkled(int i, int j)
+void ackcmd(char c,int i, int j)
 {
-	int k;
+	outbuffer[0]=c;
 	outbuffer[2]=(char) i+'0';
 	outbuffer[4]=(char) j+'0';
 	serial_writestr(outbuffer);
+}
+
+void blinkled(int i, int j)
+{
+	int k;
 	for(k=0;k<1;k++)
 	{
 		setled(i,j);
@@ -49,7 +54,7 @@ void initvga()
 	}
 }
 
-void displayonserial(char * ptr)
+extern inline void displayonserial(char * ptr)
 {
 	int i;
 	int j;
@@ -57,8 +62,8 @@ void displayonserial(char * ptr)
 	USART_Transmit('');
 	for(i=7;i>-0;i--)
 	{
-		//c=pgm_read_byte(ptr+i);
-		c=*(ptr+i);
+		c=pgm_read_byte(ptr+i);
+		//c=*(ptr+i);
 		USART_Transmit((c>>4)+'0');
 		USART_Transmit((c%16)+'0');
 		for(j=0;j<8;j++)
@@ -144,6 +149,8 @@ void vga_putc(char c)
 */
 	int i;
 	unsigned char col;
+	//displayonserial(FONTARRAY);//+c*FONTHEIGHT);
+	USART_Transmit(c);
 	for(i=0;i<FONTWIDTH;i++)
 	{
 		col=font_col(c,i);
@@ -176,7 +183,7 @@ main()
 	int x,y,i,j;
 	initleds();
 	USART_Init(MYUBRR);
-	for(y=0;y<10;y++)
+	for(y=0;y<3;y++)
 	{
 		scrolltext(hello);
 	}
@@ -186,6 +193,7 @@ main()
 		serial_readstr(4,buffer);
 		x=buffer[1]-'0';
 		y=buffer[2]-'0';
+		ackcmd(*buffer,x, y);
 		switch(*buffer)
 		{
 			case 'b':
@@ -199,7 +207,6 @@ main()
 				initleds();
 				break;
 			case 'k':
-				blinkled(x,y);//just for the debug
 				PORTA=x+y*16;
 				break;
 			case 'l':

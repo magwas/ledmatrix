@@ -42,8 +42,8 @@ __END__;
 #include "font.h"
 
 
-//static const unsigned char fontdata_mini_4x6[FONTDATAMAX] PROGMEM = {
-unsigned char fontdata_mini_4x6[FONTDATAMAX] = {
+unsigned char fontdata_mini_4x6[FONTDATAMAX] PROGMEM = {
+//unsigned char fontdata_mini_4x6[FONTDATAMAX] = {
 
 	/*{*/
 	  	/*   Char 0: ' '  */

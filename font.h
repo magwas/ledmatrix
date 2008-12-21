@@ -17,8 +17,9 @@
 #define FONTHEIGHT 6
 #define FONTWIDTH 4
 #define FONTARRAY fontdata_mini_4x6
-#define GETFONTROW(letter,i) (FONTARRAY[letter*FONTHEIGHT+i])
+//#define GETFONTROW(letter,i) (FONTARRAY[letter*FONTHEIGHT+i])
+#define GETFONTROW(letter,i) pgm_read_byte(&(FONTARRAY[letter*FONTHEIGHT+i]))
 
-//static const unsigned char fontdata_mini_4x6[FONTDATAMAX];
 unsigned char fontdata_mini_4x6[FONTDATAMAX];
+//unsigned char fontdata_mini_4x6[FONTDATAMAX];
 
