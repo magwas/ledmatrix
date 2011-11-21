@@ -18,8 +18,12 @@
 #define FONTWIDTH 4
 #define FONTARRAY fontdata_mini_4x6
 //#define GETFONTROW(letter,i) (FONTARRAY[letter*FONTHEIGHT+i])
+#ifdef SMALL_MEM
+#define GETFONTROW(letter,i) pgm_read_byte(&(FONTARRAY[(letter-32)*FONTHEIGHT+i]))
+#else /*SMALL_MEM*/
 #define GETFONTROW(letter,i) pgm_read_byte(&(FONTARRAY[letter*FONTHEIGHT+i]))
+#endif /*SMALL_MEM*/
 
-unsigned char fontdata_mini_4x6[FONTDATAMAX];
+unsigned char fontdata_mini_4x6[];
 //unsigned char fontdata_mini_4x6[FONTDATAMAX];
 

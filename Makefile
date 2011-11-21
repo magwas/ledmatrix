@@ -1,7 +1,13 @@
 MCU_TARGET     = atmega2561
+#MCU_TARGET     = attiny2313
+FREQ		= 1000000
+#FREQ		= 7372800
+#FREQ		= 12000000
+#FREQ           = 3579545 
+
 OPTIMIZE       = -O2
 
-DEFS           = -DF_CPU=1000000 -DBAUD=9600
+DEFS           = -DF_CPU=$(FREQ) -DBAUD=9600 -DNO_FONT
 LIBS           =
 
 OBJS = test.o serial.o font_mini_4x6.o
@@ -35,13 +41,19 @@ make.dep:
 	$(CC) -M $(CFLAGS) $(LDFLAGS) *.c >make.dep
 
 hwtest:
-	avrdude -p atmega2561 -c stk200
+	avrdude -p $(MCU_TARGET) -c stk200 -U lfuse:r:-:b
+
+outerquartz:
+	avrdude -p $(MCU_TARGET) -c stk200 -U lfuse:w:0xed:m
+
+innerrc:
+	avrdude -p $(MCU_TARGET) -c stk200 -U lfuse:w:0b1100100:m
 
 verify:
-	avrdude -p atmega2561 -c stk200 -U flash:v:test.srec
+	avrdude -p $(MCU_TARGET) -c stk200 -U flash:v:test.srec
 
 program: test.srec
-	avrdude -p atmega2561 -c stk200 -U flash:w:test.srec
+	avrdude -p $(MCU_TARGET) -c stk200 -U flash:w:test.srec
 
 include make.dep
 

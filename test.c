@@ -1,3 +1,4 @@
+#include "config.h"
 #include <util/delay.h>
 #include <avr/io.h>
 #include "font.h"
@@ -5,20 +6,42 @@
 
 void setled(i,j)
 {
-	PORTA=(1<<i)^0x04;
-	PORTC=1<<j;
+#if defined (__AVR_ATtiny2313__)
+	if(i<3)
+	{
+		PORTA=PORTA&(0xf8|(1<<i));
+	} else {
+		PORTD=PORTD&(0x83|(1<<(i-1)));
+	}
+#else /* __AVR_ATtiny2313__ */
+	FETPORT=(1<<i)^0x04;
+#endif /* __AVR_ATtiny2313__ */
+	LEDPORT=1<<j;
 }
 void initleds()
 {
-	DDRA=0x0ff;
-	DDRC=0x0ff;
-	PORTA=0x00;
-	PORTC=0x00;
+#if defined (__AVR_ATtiny2313__)
+	/* FET side bottom up is A0,A1,A2,D2,D3,D4,D5,D6*/
+	DDRA=0x07;
+	DDRD=0x7c;
+	PORTA=PORTA&0xf8;
+	PORTD=PORTD&0x83;
+#else /* __AVR_ATtiny2313__ */
+	FETPORT=0x00;
+	FETDDR=0x0ff;
+#endif /* __AVR_ATtiny2313__ */
+	LEDPORT=0x00;
+	LEDDDR=0x0ff;
 }
 void clearleds()
 {
-	PORTA=0x00;
-	PORTC=0x00;
+#if defined (__AVR_ATtiny2313__)
+	PORTA=PORTA&0xf8;
+	PORTD=PORTD&0x83;
+#else /* __AVR_ATtiny2313__ */
+	FETPORT=0x00;
+#endif /* __AVR_ATtiny2313__ */
+	LEDPORT=0x00;
 }
 
 char outbuffer[]="b x y\r\n";
@@ -93,8 +116,17 @@ void displayvga()
 	for(j=0;j<10;j++){
 		for(i=0;i<8;i++)
 		{
-			PORTA=(1<<i)^0x04;
-			PORTC=videomem[i];
+#if defined (__AVR_ATtiny2313__)
+			if(i<3)
+			{
+				PORTA=PORTA&(0xf8|(1<<i));
+			} else {
+				PORTD=PORTD&(0x83|(1<<(i-1)));
+			}
+#else /* __AVR_ATtiny2313__ */
+				FETPORT=(1<<i)^0x04;
+#endif /* __AVR_ATtiny2313__ */
+			LEDPORT=videomem[i];
 			_delay_ms(1);
 		}
 	}
@@ -181,8 +213,26 @@ char sorminta[]="//I";
 main()
 {
 	int x,y,i,j;
-	initleds();
 	USART_Init(MYUBRR);
+//	DDRB=0xff;
+//	DDRD=0xff;
+	while(1)
+	{
+//		PORTB=0xff;
+//		PORTD=0xff;
+		_delay_ms(500);
+		serial_writestr("\r\nmatrix>");
+//		PORTB=0x0;
+//		PORTD=0x0;
+		_delay_ms(500);
+	}
+
+	initleds();
+	while(1)
+	{
+	serial_writestr("\r\nmatrix>");
+	}
+
 	for(y=0;y<3;y++)
 	{
 		scrolltext(hello);
@@ -207,7 +257,7 @@ main()
 				initleds();
 				break;
 			case 'k':
-				PORTA=x+y*16;
+				LEDPORT=x+y*16;
 				break;
 			case 'l':
 				for(i=0;i<8;i++)

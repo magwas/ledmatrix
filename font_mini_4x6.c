@@ -42,9 +42,11 @@ __END__;
 #include "font.h"
 
 
-unsigned char fontdata_mini_4x6[FONTDATAMAX] PROGMEM = {
+//unsigned char fontdata_mini_4x6[FONTDATAMAX] PROGMEM = {
+unsigned char fontdata_mini_4x6[] PROGMEM = {
 //unsigned char fontdata_mini_4x6[FONTDATAMAX] = {
-
+#ifndef NO_FONT
+#ifndef SMALL_MEM
 	/*{*/
 	  	/*   Char 0: ' '  */
 	0xee,	/*=  [*** ]       */
@@ -334,6 +336,7 @@ unsigned char fontdata_mini_4x6[FONTDATAMAX] PROGMEM = {
 	0x00,	/*=  [    ]       */
 	/*}*/
 	/*{*/
+#endif /* SMALL_MEM */
 	  	/*   Char 32: ' ' */
 	0x00,	/*=  [    ]       */
 	0x00,	/*=  [    ]       */
@@ -1121,6 +1124,7 @@ unsigned char fontdata_mini_4x6[FONTDATAMAX] PROGMEM = {
 	0x00,	/*=   [    ]        */
 	0x00,	/*=   [    ]        */
 	/*}*/
+#ifndef SMALL_MEM
 	/*{*/ 	/*   Char 128:  */
 	0xee,	/*=   [*** ]        */
 	0xee,	/*=   [*** ]        */
@@ -2145,6 +2149,8 @@ unsigned char fontdata_mini_4x6[FONTDATAMAX] PROGMEM = {
 	0xee,	/*=   [*** ]        */
 	0x00,	/*=   [    ]        */
 	/*}*/
+#endif /* SMALL_MEM*/
+#endif /* NO_FONT */
 };
 
 
